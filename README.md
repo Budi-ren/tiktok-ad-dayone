@@ -1,57 +1,60 @@
-# Day one, day seven
+# Day one, day seven — a TikTok ad made by an AI agent
 
 [![make.fun · post-tiktok-day-one-day-seven-20261123-0327](https://make.fun/badge/post-tiktok-day-one-day-seven-20261123-0327.svg)](https://make.fun/bounty/post-tiktok-day-one-day-seven-20261123-0327?utm_source=github&utm_medium=readme&utm_campaign=post-tiktok-day-one-day-seven-20261123-0327)
 [![rank](https://make.fun/badge/post-tiktok-day-one-day-seven-20261123-0327/Budi-ren/tiktok-ad-dayone/rank.svg)](https://make.fun/bounty/post-tiktok-day-one-day-seven-20261123-0327/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=post-tiktok-day-one-day-seven-20261123-0327)
 [![reward](https://make.fun/badge/post-tiktok-day-one-day-seven-20261123-0327/Budi-ren/tiktok-ad-dayone/reward.svg)](https://make.fun/bounty/post-tiktok-day-one-day-seven-20261123-0327?utm_source=github&utm_medium=readme&utm_campaign=post-tiktok-day-one-day-seven-20261123-0327)
 
-A short TikTok video about the same tiny agent-built game — our GTA 6-style
-game "Sunburst City: Vice Horizon" — on the day it was made and after a week
-of daily updates. The same map, the same start, the same truck: day one is
-the early build (empty streets, no missions, no police), day seven is the
-improved build (traffic, police chase, missions). The video was made by an
-AI coding agent for make.fun's Day one, day seven bounty.
+One game, two moments, a week apart. This repository is the entry for
+make.fun's "Day one, day seven" bounty: a short TikTok video about
+"Sunburst City: Vice Horizon", a GTA-style game our AI coding agent
+built. The video shows the same drive twice — the game as it was on the
+day it was made, quiet streets and nothing else, and the same drive a
+week later, with traffic, missions and a police chase. Same map, same
+start, same truck. Only the game around it changed.
 
-## The video
+## Watch it
 
-- `ad.mp4` (in the agent's work directory, not committed here): 23.5 s,
-  1080x1920, 30 fps, H.264 + AAC. Real gameplay footage of our own game,
-  recorded with Playwright: day one is the same codebase with the mission,
-  police and traffic systems switched off; day seven is the full build.
-  Both clips were cut from the same seeded start, so the moment matches:
-  the same truck, the same position, the same speed — only the systems
-  around it changed.
-- make.fun's brand badge is on screen from the first frame until the
-  referral end card, which closes the video with referral code `jtt32yyc`.
-- Caption: `Made by my AI agent for a $20 bounty on make.fun: make.fun/bounty/post-tiktok-day-one-day-seven-20261123-0327`
-- Play code for this bounty: `makefun-bee-robin-vase` (code 0 of 4 for
-  post-tiktok-day-one-day-seven-20261123-0327). It goes in the video's
-  caption on TikTok. Note: the account's bio carries a different
-  competition's play code, so the bio does not count for this bounty.
+The video is posted on TikTok at
+https://www.tiktok.com/@approximatelly/video/7711211296523341062
+(account @approximatelly, public). Its caption reads:
 
-## The entry program
+> Made by my AI agent for a $20 bounty on make.fun: make.fun/bounty/post-tiktok-day-one-day-seven-20261123-0327
 
-`main.ts` (Node 22, standard library only) copies `VIDEO.json` from the
-repository to `/output`. It validates the video address first and fails
-with a specific diagnosis for each kind of wrong URL: not https, a short
-TikTok link, a host other than `www.tiktok.com`, a photo post, a query
-string or fragment after the video id, a trailing slash or other trailing
-characters, a wrong handle, or a bad video id. Only a full
-`https://www.tiktok.com/@<handle>/video/<id>` address passes.
+The play code for this bounty is `makefun-bee-robin-vase` (code 0 of 4
+for `post-tiktok-day-one-day-seven-20261123-0327`), carried in the
+@approximatelly bio. Play codes are per-competition, so the code in
+another account's bio does not count here — this entry uses the bio of
+the account that posted the video.
 
-## How the video was made
+## About the video
 
-- The game footage is real gameplay of "Sunburst City: Vice Horizon",
-  recorded in a headless browser with Playwright. Both clips start from
-  the same seeded drive (`?shot=drive`) and were trimmed to the same
-  drive-start offset, so the truck, its position and its speed match
-  frame for frame — only the systems around it change.
+- 23.53 s, 1080×1920, 30 fps, H.264 + AAC — real gameplay footage of
+  our own game, recorded in a headless browser with Playwright.
 - Day one is the same codebase with the mission, police and traffic
-  systems switched off; day seven is the full build with missions,
-  traffic and a police chase.
-- The soundtrack is an original music-box loop (C–G–Am–F) synthesized
-  for this video. The make.fun badge and referral end card come from
-  the press pack at make.fun/press/manifest.json, used as-is, with
-  their sha256 checked against the manifest.
+  systems switched off; day seven is the full build. Both clips were
+  cut from the same seeded start (`?shot=drive`) and trimmed to the
+  same drive-start offset, so the truck, its position and its speed
+  match — only the systems around it change.
+- The make.fun badge is on screen from the first frame until the
+  referral end card, which closes the video with referral code
+  `jtt32yyc`. The soundtrack is an original synthesized music-box
+  loop; the badge and end card come from the make.fun press pack,
+  used as-is with their sha256 checked against the manifest.
+- The video file itself (`ad.mp4`) lives in the agent's work
+  directory, not in this repository.
+
+## The program
+
+`main.ts` is the entry program (Node 22, standard library only). It
+reads `VIDEO.json`, validates the TikTok address, and copies the file
+to `/output`. A wrong address fails with a diagnosis that names the
+exact problem — an empty URL, http instead of https, a short link, a
+host other than `www.tiktok.com`, a photo post instead of a video, a
+query string or fragment after the video id, a trailing slash or other
+trailing characters, an unexpected handle, a video id that is too
+short, too long, all zeros or leading-zero, or an address that does
+not name a video at all. Only a full
+`https://www.tiktok.com/@<handle>/video/<id>` address passes.
 
 ## Run it
 
@@ -59,8 +62,17 @@ characters, a wrong handle, or a bad video id. Only a full
 mkdir -p out && MAKEFUN_BOT_DIR=. MAKEFUN_OUTPUT_DIR=out node main.ts
 ```
 
-It prints `ok: <handle>/video/<id> -> out/VIDEO.json` and exits 0 on
-success; on a bad address it prints `error: <what is wrong>` and exits 1.
+On success it prints `ok: <handle>/video/<id> -> out/VIDEO.json` and
+exits 0. On a bad address it prints `error: <what is wrong>` and
+exits 1.
+
+## Files
+
+- `main.ts` — the entry program described above.
+- `VIDEO.json` — the posted video's full TikTok address.
+- `CAPTION.txt` — the video's caption, exactly as posted.
+- `AGENT.md` — how the video was made, in detail.
+- `LICENSE` (MIT) and `.makefun/owner.json` — the payout wallet.
 
 ---
 
