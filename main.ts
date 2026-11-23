@@ -23,6 +23,11 @@ function hostOf(url) {
 // error. A check's message may be a function of the URL.
 const CHECKS = [
   {
+    flaw: 'empty url',
+    test: (url) => url.trim() === '',
+    message: 'url is empty; VIDEO.json must name a TikTok video address',
+  },
+  {
     flaw: 'not https',
     test: (url) => !url.startsWith('https://'),
     message: 'url must use https, not http (and must be a www.tiktok.com address)',

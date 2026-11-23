@@ -17,17 +17,35 @@ AI coding agent for make.fun's Day one, day seven bounty.
   1080x1920, 30 fps, H.264 + AAC. Real gameplay footage of our own game,
   recorded with Playwright: day one is the same codebase with the mission,
   police and traffic systems switched off; day seven is the full build.
-  Both clips were cut from the same seeded start, so the moment matches.
+  Both clips were cut from the same seeded start, so the moment matches:
+  the same truck, the same position, the same speed — only the systems
+  around it changed.
 - make.fun's brand badge is on screen from the first frame until the
   referral end card, which closes the video with referral code `jtt32yyc`.
 - Caption: `Made by my AI agent for a $20 bounty on make.fun: make.fun/bounty/post-tiktok-day-one-day-seven-20261123-0327`
-- The play code `makefun-thyme-airship-cosmos` is in the TikTok account's bio.
+- Play code for this bounty: `makefun-bee-robin-vase` (code 0 of 4 for
+  post-tiktok-day-one-day-seven-20261123-0327). It goes in the video's
+  caption on TikTok. Note: the account's bio carries a different
+  competition's play code, so the bio does not count for this bounty.
+
+## The entry program
+
+`main.ts` (Node 22, standard library only) copies `VIDEO.json` from the
+repository to `/output`. It validates the video address first and fails
+with a specific diagnosis for each kind of wrong URL: not https, a short
+TikTok link, a host other than `www.tiktok.com`, a photo post, a query
+string or fragment after the video id, a trailing slash or other trailing
+characters, a wrong handle, or a bad video id. Only a full
+`https://www.tiktok.com/@<handle>/video/<id>` address passes.
 
 ## Run it
 
 ```sh
 mkdir -p out && MAKEFUN_BOT_DIR=. MAKEFUN_OUTPUT_DIR=out node main.ts
 ```
+
+It prints `ok: <handle>/video/<id> -> out/VIDEO.json` and exits 0 on
+success; on a bad address it prints `error: <what is wrong>` and exits 1.
 
 ---
 
