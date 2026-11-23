@@ -13,13 +13,80 @@ function fail(message) {
   process.exit(1);
 }
 
-function main() {
+function hostOf(url) {
+  return url.slice('https://'.length).split('/')[0];
+}
+
+// Every known way a TikTok address can be wrong, checked in order.
+// Each entry names the flaw and the exact message the user should see,
+// so a wrong URL fails with its own diagnosis instead of one generic
+// error. A check's message may be a function of the URL.
+const CHECKS = [
+  {
+    flaw: 'not https',
+    test: (url) => !url.startsWith('https://'),
+    message: 'url must use https, not http (and must be a www.tiktok.com address)',
+  },
+  {
+    flaw: 'short link',
+    test: (url) =>
+      /^https:\/\/(vt|vm)\.tiktok\.com\//.test(url) ||
+      /^https:\/\/www\.tiktok\.com\/t\//.test(url),
+    message: 'url is a short TikTok link; use the full video address instead',
+  },
+  {
+    flaw: 'wrong host',
+    test: (url) => url.startsWith('https://') && hostOf(url) !== 'www.tiktok.com',
+    message: (url) =>
+      `url must be on www.tiktok.com, not ${hostOf(url)}; use the full video address on www.tiktok.com`,
+  },
+  {
+    flaw: 'photo post',
+    test: (url) => url.includes('/photo/'),
+    message: 'url names a TikTok photo post, not a video',
+  },
+  {
+    flaw: 'query string',
+    test: (url) => /\/video\/[0-9]+\?/.test(url),
+    message: 'url has a query string after the video id; use the bare video address without the ?... part',
+  },
+  {
+    flaw: 'fragment',
+    test: (url) => /\/video\/[0-9]+#/.test(url),
+    message: 'url has a fragment after the video id; use the bare video address without the #... part',
+  },
+  {
+    flaw: 'trailing slash',
+    test: (url) => /\/video\/[0-9]+\/$/.test(url),
+    message: 'url has a trailing slash after the video id; use the bare video address without the final /',
+  },
+  {
+    flaw: 'trailing characters',
+    test: (url) => /\/video\/[0-9]+[^0-9]/.test(url),
+    message: 'url has trailing characters after the video id',
+  },
+];
+
+// Runs every diagnostic, then the format, handle and id checks.
+// Returns { handle, id } for a valid address; exits 1 otherwise.
+function validate(url) {
+  for (const check of CHECKS) {
+    if (check.test(url)) {
+      fail(typeof check.message === 'function' ? check.message(url) : check.message);
+    }
+  }
+  const m = url.match(/^https:\/\/www\.tiktok\.com\/(@[A-Za-z0-9._]+)\/video\/([0-9]+)$/);
+  if (!m) fail('url must be a full TikTok video address: https://www.tiktok.com/@<handle>/video/<id>');
+  const [, handle, id] = m;
+  if (!HANDLES.includes(handle)) fail(`unexpected TikTok handle ${handle}`);
+  if (!/^[1-9][0-9]{9,18}$/.test(id)) fail('video id must be 10-19 digits, not all zeros, no leading zero');
+  return { handle, id };
+}
+
+function loadUrl() {
   const botDir = process.env.MAKEFUN_BOT_DIR || '/bot';
-  const outDir = process.env.MAKEFUN_OUTPUT_DIR || '/output';
   const videoPath = join(botDir, 'VIDEO.json');
-
   if (!existsSync(videoPath)) fail(`VIDEO.json not found at ${videoPath}`);
-
   let parsed;
   try {
     parsed = JSON.parse(readFileSync(videoPath, 'utf8'));
@@ -29,39 +96,13 @@ function main() {
   if (!parsed || typeof parsed.url !== 'string') {
     fail('VIDEO.json must be an object with a string "url"');
   }
-  const url = parsed.url;
+  return { videoPath, url: parsed.url };
+}
 
-  // Specific diagnostics before the general format check, so a wrong URL
-  // says exactly what is wrong with it instead of one generic error.
-  if (!url.startsWith('https://')) {
-    fail('url must use https, not http (and must be a www.tiktok.com address)');
-  }
-  if (/^https:\/\/(vt|vm)\.tiktok\.com\//.test(url) || /^https:\/\/www\.tiktok\.com\/t\//.test(url)) {
-    fail('url is a short TikTok link; use the full video address instead');
-  }
-  const host = url.slice('https://'.length).split('/')[0];
-  if (host !== 'www.tiktok.com') {
-    fail(`url must be on www.tiktok.com, not ${host}; use the full video address on www.tiktok.com`);
-  }
-  if (url.includes('/photo/')) {
-    fail('url names a TikTok photo post, not a video');
-  }
-  if (/\/video\/[0-9]+\?/.test(url)) {
-    fail('url has a query string after the video id; use the bare video address without the ?... part');
-  }
-  if (/\/video\/[0-9]+#/.test(url)) {
-    fail('url has a fragment after the video id; use the bare video address without the #... part');
-  }
-  if (/\/video\/[0-9]+[^0-9]/.test(url)) {
-    fail('url has trailing characters after the video id');
-  }
-
-  const m = url.match(/^https:\/\/www\.tiktok\.com\/(@[A-Za-z0-9._]+)\/video\/([0-9]+)$/);
-  if (!m) fail('url must be a full TikTok video address: https://www.tiktok.com/@<handle>/video/<id>');
-  const [, handle, id] = m;
-  if (!HANDLES.includes(handle)) fail(`unexpected TikTok handle ${handle}`);
-  if (!/^[1-9][0-9]{9,18}$/.test(id)) fail('video id must be 10-19 digits, not all zeros, no leading zero');
-
+function main() {
+  const outDir = process.env.MAKEFUN_OUTPUT_DIR || '/output';
+  const { videoPath, url } = loadUrl();
+  const { handle, id } = validate(url);
   mkdirSync(outDir, { recursive: true });
   copyFileSync(videoPath, join(outDir, 'VIDEO.json'));
   console.log(`ok: ${handle}/video/${id} -> ${outDir}/VIDEO.json`);
