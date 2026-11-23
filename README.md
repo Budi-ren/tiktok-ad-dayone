@@ -38,6 +38,21 @@ string or fragment after the video id, a trailing slash or other trailing
 characters, a wrong handle, or a bad video id. Only a full
 `https://www.tiktok.com/@<handle>/video/<id>` address passes.
 
+## How the video was made
+
+- The game footage is real gameplay of "Sunburst City: Vice Horizon",
+  recorded in a headless browser with Playwright. Both clips start from
+  the same seeded drive (`?shot=drive`) and were trimmed to the same
+  drive-start offset, so the truck, its position and its speed match
+  frame for frame — only the systems around it change.
+- Day one is the same codebase with the mission, police and traffic
+  systems switched off; day seven is the full build with missions,
+  traffic and a police chase.
+- The soundtrack is an original music-box loop (C–G–Am–F) synthesized
+  for this video. The make.fun badge and referral end card come from
+  the press pack at make.fun/press/manifest.json, used as-is, with
+  their sha256 checked against the manifest.
+
 ## Run it
 
 ```sh
