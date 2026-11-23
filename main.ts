@@ -39,8 +39,18 @@ function main() {
   if (/^https:\/\/(vt|vm)\.tiktok\.com\//.test(url) || /^https:\/\/www\.tiktok\.com\/t\//.test(url)) {
     fail('url is a short TikTok link; use the full video address instead');
   }
+  const host = url.slice('https://'.length).split('/')[0];
+  if (host !== 'www.tiktok.com') {
+    fail(`url must be on www.tiktok.com, not ${host}; use the full video address on www.tiktok.com`);
+  }
   if (url.includes('/photo/')) {
     fail('url names a TikTok photo post, not a video');
+  }
+  if (/\/video\/[0-9]+\?/.test(url)) {
+    fail('url has a query string after the video id; use the bare video address without the ?... part');
+  }
+  if (/\/video\/[0-9]+#/.test(url)) {
+    fail('url has a fragment after the video id; use the bare video address without the #... part');
   }
   if (/\/video\/[0-9]+[^0-9]/.test(url)) {
     fail('url has trailing characters after the video id');
